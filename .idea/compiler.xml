@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="e4s-app" />
+        <module name="e4s-configuration" />
+        <module name="e4s-datastore" />
+        <module name="e4s-client" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="e4s-app" options="-parameters" />
+      <module name="e4s-client" options="-parameters" />
+      <module name="e4s-configuration" options="-parameters" />
+      <module name="e4s-datastore" options="-parameters" />
+    </option>
+  </component>
+</project>
