@@ -14,10 +14,12 @@ import java.util.Collections;
 public class HazelcastConfig {
 
 
-    @Value("${app-name:dev}")
-    private String appName;
+    @Value("${cluster.name:e4s}")
+    private String clusterName;
+    @Value("${instance.name:${random.value}}")
+    private String instanceName;
 
-    @Value("${app-port:6701}")
+    @Value("${app.port:6701}")
     private int port;
 
     @Autowired
@@ -26,8 +28,8 @@ public class HazelcastConfig {
     @Bean
     public Config createHzInstance() {
         Config config = new Config();
-        config.setInstanceName(appName);
-        config.setClusterName("e4s");
+        config.setInstanceName(instanceName);
+        config.setClusterName(clusterName);
         config.getNetworkConfig().setPort(port).setPortCount(100).setPortAutoIncrement(true);
         config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
         config.getNetworkConfig().getJoin().getAutoDetectionConfig().setEnabled(true);

@@ -21,25 +21,6 @@ public class App implements CommandLineRunner {
         SpringApplication.run(App.class, args);
     }
 
-    @Bean
-    public UUID registerClientEventListener(final HazelcastInstance instance){
-
-        final Logger LOG = LoggerFactory.getLogger("e4s-client-listener");
-
-        return instance.getClientService().addClientListener(new ClientListener() {
-            @Override
-            public void clientConnected(Client client) {
-                LOG.info("client: {} connected", client);
-            }
-
-            @Override
-            public void clientDisconnected(Client client) {
-                LOG.info("client: {} disconnected", client);
-            }
-        });
-    }
-
-
     @Override
     public void run(String... args) throws Exception {
 
