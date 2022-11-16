@@ -1,7 +1,0 @@
-spring:
-#  hazelcast:
-#    config: classpath:hazelcast.yaml
-  datasource:
-    url: jdbc:postgresql://192.168.64.27:5432/postgres?currentSchema=ee
-    username: postgres
-    password: password
