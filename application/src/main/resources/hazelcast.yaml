@@ -1,5 +1,7 @@
 hazelcast:
   cluster-name: zgc
+  spring-aware:
+    enabled: true
   network:
     port:
       port: 6701

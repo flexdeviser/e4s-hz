@@ -3,6 +3,7 @@ package org.e4s.configuration.server;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.ListenerConfig;
 import com.hazelcast.core.LifecycleListener;
+import com.hazelcast.spring.context.SpringManagedContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,12 @@ public class HazelcastConfig {
     @Autowired
     private LifecycleListener lifecycleListener;
 
+
+    @Bean
+    public SpringManagedContext managedContext() {
+        return new SpringManagedContext();
+    }
+
     @Bean
     public Config createHzInstance() {
         Config config = new Config();
@@ -33,6 +40,8 @@ public class HazelcastConfig {
         config.getNetworkConfig().getJoin().getAutoDetectionConfig().setEnabled(true);
         config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(true).addMember("localhost");
         config.addListenerConfig(new ListenerConfig(lifecycleListener));
+        config.setManagedContext(managedContext());
+
         return config;
     }
 }
