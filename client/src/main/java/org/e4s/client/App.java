@@ -10,8 +10,6 @@ import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.context.propagation.TextMapSetter;
-import java.time.Instant;
-import java.util.concurrent.Future;
 import org.e4s.configuration.operation.RunTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +20,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+
+import java.time.Instant;
+import java.util.Random;
+import java.util.concurrent.Future;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"org.e4s.client", "org.e4s.configuration.client", "org.e4s.configuration.otl"})
@@ -54,7 +56,7 @@ public class App {
         return args -> {
             // check if any other loader or pump running?
             IExecutorService exeService = instance.getExecutorService("stream");
-            while(true){
+            while (true) {
                 Span span = tracer.spanBuilder("operation").startSpan();
 
                 try (Scope scope = span.makeCurrent()) {
@@ -62,6 +64,12 @@ public class App {
                         Span job = tracer.spanBuilder("jobs").addLink(span.getSpanContext()).startSpan();
                         job.addEvent("create task", Instant.now());
                         RunTask runTask = new RunTask();
+
+                        if (new Random().nextBoolean()) {
+                            job.addEvent("go into true", Instant.now());
+                        } else {
+                            job.addEvent("go into false", Instant.now());
+                        }
 
                         job.setStatus(StatusCode.valueOf("Handover to backend"));
                         // bind trace id
@@ -80,7 +88,6 @@ public class App {
                 Thread.sleep(10000);
 
             }
-
 
 
         };
