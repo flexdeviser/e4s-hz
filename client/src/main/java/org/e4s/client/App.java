@@ -4,6 +4,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IExecutorService;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
@@ -61,6 +62,8 @@ public class App {
                         Span job = tracer.spanBuilder("jobs").addLink(span.getSpanContext()).startSpan();
                         job.addEvent("create task", Instant.now());
                         RunTask runTask = new RunTask();
+
+                        job.setStatus(StatusCode.valueOf("Handover to backend"));
                         // bind trace id
                         textMapPropagator.inject(Context.current(), runTask, runTaskSetter);
                         Future<Boolean> result = exeService.submit(runTask);
