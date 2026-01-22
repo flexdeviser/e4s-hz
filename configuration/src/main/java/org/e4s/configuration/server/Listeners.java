@@ -1,6 +1,6 @@
 package org.e4s.configuration.server;
 
-import com.hazelcast.core.LifecycleEvent;
+import com.hazelcast.client.impl.ClientLifecycleMonitor;
 import com.hazelcast.core.LifecycleListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,8 @@ public class Listeners {
     private Logger LOG = LoggerFactory.getLogger(Listeners.class);
 
     @Bean
-    public LifecycleListener lifecycleListener(){
+    public LifecycleListener lifecycleListener() {
+
         return lifecycleEvent -> {
             LOG.info("cluster: {}", lifecycleEvent);
         };
