@@ -8,7 +8,7 @@ import java.util.Properties;
 public class Payload {
 
 
-    private Properties properties = new Properties();;
+    private Properties properties = new Properties();
 
     private List<String> data;
 

@@ -13,8 +13,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class TextMapConfig {
 
-
-
     @Bean
     public TextMapPropagator textMapPropagator(final OpenTelemetry openTelemetry) {
         return openTelemetry.getPropagators().getTextMapPropagator();
