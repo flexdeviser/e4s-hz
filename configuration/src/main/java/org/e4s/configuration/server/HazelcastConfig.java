@@ -5,6 +5,9 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.config.ListenerConfig;
 import com.hazelcast.config.MapConfig;
+import com.hazelcast.config.MergePolicyConfig;
+import com.hazelcast.config.MultiMapConfig;
+import com.hazelcast.config.MultiMapConfig.ValueCollectionType;
 import com.hazelcast.core.LifecycleListener;
 import com.hazelcast.spring.context.SpringManagedContext;
 
@@ -64,6 +67,12 @@ public class HazelcastConfig {
         bytesConfig.setCacheDeserializedValues(CacheDeserializedValues.NEVER);
         bytesConfig.setBackupCount(1);
         config.addMapConfig(bytesConfig);
+
+        // Multimap will take too much memory.
+        MultiMapConfig pqCache = new MultiMapConfig("pg_cache");
+        pqCache.setValueCollectionType(ValueCollectionType.LIST);
+        pqCache.setAsyncBackupCount(1);
+
 
         // serialization
         SubZero.useAsGlobalSerializer(config);

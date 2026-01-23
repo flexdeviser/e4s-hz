@@ -9,7 +9,10 @@ import com.hazelcast.client.ClientListener;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import com.hazelcast.map.LocalMapStats;
+import com.hazelcast.multimap.LocalMultiMapStats;
+import com.hazelcast.multimap.MultiMap;
 
+import org.e4s.configuration.model.MeterPQ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,24 +31,6 @@ public class App implements CommandLineRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
-    }
-
-    @Bean
-    public UUID registerClientEventListener(final HazelcastInstance instance) {
-
-        final Logger LOG = LoggerFactory.getLogger("e4s-client-listener");
-
-        return instance.getClientService().addClientListener(new ClientListener() {
-            @Override
-            public void clientConnected(Client client) {
-                LOG.info("client: {} connected", client);
-            }
-
-            @Override
-            public void clientDisconnected(Client client) {
-                LOG.info("client: {} disconnected", client);
-            }
-        });
     }
 
     @Autowired
@@ -87,6 +72,14 @@ public class App implements CommandLineRunner {
                            DataSize.ofBytes(stats.getOwnedEntryMemoryCost()).toMegabytes());
             LOG_STATS.info("IMap: {} backup items: {}, cost: {} MB", "pq_cache_objects", stats.getBackupEntryCount(),
                            DataSize.ofBytes(stats.getBackupEntryMemoryCost()).toMegabytes());
+
+//            MultiMap<UUID, MeterPQ> multiMap = hazelcastInstance.getMultiMap("pq_cache");
+//            LocalMultiMapStats multiMapStats = multiMap.getLocalMultiMapStats();
+//            LOG_STATS.info("IMap: {} items: {}, cost: {} MB", "pq_cache", multiMapStats.getOwnedEntryCount(),
+//                           DataSize.ofBytes(multiMapStats.getOwnedEntryMemoryCost()).toMegabytes());
+//            LOG_STATS.info("IMap: {} backup items: {}, cost: {} MB", "pq_cache", multiMapStats.getBackupEntryCount(),
+//                           DataSize.ofBytes(multiMapStats.getBackupEntryMemoryCost()).toMegabytes());
+
 
         }, 10, 10, TimeUnit.SECONDS);
 

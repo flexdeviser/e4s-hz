@@ -8,6 +8,8 @@ public class MeterPQ implements Serializable {
 
     private UUID key;
 
+    private long timestamp;
+
     private float voltage;
 
     private float current;
@@ -15,10 +17,11 @@ public class MeterPQ implements Serializable {
     public MeterPQ() {
     }
 
-    public MeterPQ(UUID key, float voltage, float current) {
+    public MeterPQ(UUID key, float voltage, float current, long timestamp) {
         this.key = key;
         this.voltage = voltage;
         this.current = current;
+        this.timestamp = timestamp;
     }
 
     public UUID getKey() {
@@ -45,19 +48,26 @@ public class MeterPQ implements Serializable {
         this.current = current;
     }
 
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof MeterPQ meterPQ)) {
             return false;
         }
-        return Float.compare(getVoltage(), meterPQ.getVoltage()) == 0
+        return getTimestamp() == meterPQ.getTimestamp() && Float.compare(getVoltage(), meterPQ.getVoltage()) == 0
             && Float.compare(getCurrent(), meterPQ.getCurrent()) == 0 && Objects.equals(getKey(),
                                                                                         meterPQ.getKey());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getKey(), getVoltage(), getCurrent());
+        return Objects.hash(getKey(), getTimestamp(), getVoltage(), getCurrent());
     }
-
 }

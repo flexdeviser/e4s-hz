@@ -2,10 +2,12 @@ package org.e4s.client;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
@@ -13,6 +15,7 @@ import java.util.stream.IntStream;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IExecutorService;
 import com.hazelcast.map.IMap;
+import com.hazelcast.multimap.MultiMap;
 
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
@@ -63,6 +66,9 @@ public class Jobs {
 
     private RedissonClient redissonClient;
 
+    private long start = 1737590400000L;
+    private long FIVE_MINS = 5 * 60 * 1000L;
+
     @Autowired
     public void loadRedissonClient(RedissonClient redissonClient) {
         this.redissonClient = redissonClient;
@@ -86,7 +92,43 @@ public class Jobs {
 //        return cacheLoader();
 //        return cacheLoaderInMemory();
 //        return cacheRedisLoader();
-        return args -> {};
+        return args -> {
+//            multiMapLoader();
+        };
+    }
+
+
+    private void multiMapLoader() {
+
+        List<UUID> keys = new ArrayList<>();
+
+        MultiMap<UUID, MeterPQ> multiMap = instance.getMultiMap("pg_cache");
+
+
+
+        IntStream.range(0, 10000).forEachOrdered(w -> {
+            final UUID key = UUID.randomUUID();
+            keys.add(key);
+            List<MeterPQ> payload = new ArrayList<>();
+            for (int i = 0; i < (288 * 21); i++) {
+                MeterPQ meterPq = new MeterPQ(key, 255, 1, start + (FIVE_MINS * (i)));
+                payload.add(meterPq);
+            }
+            CompletableFuture<Void> task = multiMap.putAllAsync(key, payload).toCompletableFuture();
+
+            task.join();
+
+            if (w % 1000 == 0) {
+                System.out.println(w + " devices data loaded.");
+            }
+        });
+
+        keys.forEach(key -> {
+            Collection<MeterPQ> data = multiMap.get(key);
+            System.out.println("Size: " + data.size());
+        });
+
+
     }
 
 
@@ -103,7 +145,7 @@ public class Jobs {
                 CachePayload<MeterPQ> cpl = new CachePayload<>(); // wrap arraylist to an object will only take 600mb
 
                 for (int i = 0; i < (288 * 21); i++) {
-                    MeterPQ meterPq = new MeterPQ(key, 255, 1);
+                    MeterPQ meterPq = new MeterPQ(key, 255, 1, start + (FIVE_MINS * (i)));
 //                    data.add(meterPq);
                     cpl.add(meterPq);
                 }
@@ -128,7 +170,7 @@ public class Jobs {
                 List<MeterPQ> data = new ArrayList<>();
 
                 for (int i = 0; i < (288 * 21); i++) {
-                    MeterPQ meterPq = new MeterPQ(key, 255, 1);
+                    MeterPQ meterPq = new MeterPQ(key, 255, 1, start + (FIVE_MINS * (i)));
                     data.add(meterPq);
                 }
                 mapCache.put(key, data, 30, TimeUnit.SECONDS);
@@ -145,7 +187,7 @@ public class Jobs {
                 List<MeterPQ> data = new ArrayList<>();
 
                 for (int i = 0; i < (288 * 21); i++) {
-                    MeterPQ meterPq = new MeterPQ(key, 255, 1);
+                    MeterPQ meterPq = new MeterPQ(key, 255, 1, start + (FIVE_MINS * (i)));
                     data.add(meterPq);
                 }
 

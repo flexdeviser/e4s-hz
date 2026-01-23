@@ -23,6 +23,7 @@ import com.hazelcast.internal.serialization.Data;
 import com.hazelcast.internal.serialization.SerializationService;
 import com.hazelcast.internal.serialization.impl.HeapData;
 import com.hazelcast.map.IMap;
+import com.hazelcast.multimap.MultiMap;
 
 import org.apache.commons.io.IOUtils;
 import org.e4s.configuration.model.CachePayload;
@@ -72,6 +73,9 @@ public class CacheBenchmarking {
 
     private static UUID[] keys;
 
+    private long start = 1737590400000L;
+    private long FIVE_MINS = 5 * 60 * 1000L;
+
     @Autowired
     public void injectInstance(HazelcastInstance instance, RedissonClient redissonClient) {
         CacheBenchmarking.instance = instance;
@@ -92,7 +96,7 @@ public class CacheBenchmarking {
                 final CachePayload<MeterPQ> pq = new CachePayload<>();
 
                 for (int i = 0; i < (288 * 21); i++) {
-                    pq.add(new MeterPQ(key, 255, 1));
+                    pq.add(new MeterPQ(key, 255, 1, start + (FIVE_MINS * (i))));
                 }
                 // dummy data
                 data.put(key, pq);
@@ -172,6 +176,15 @@ public class CacheBenchmarking {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+    }
+
+    @Benchmark
+    public void _41_cacheHZMultiMapFilling() {
+        final UUID key = randomElement(CacheBenchmarking.fileNames.toArray(new UUID[0]));
+        // find data
+        List<MeterPQ> payload = data.get(key).getAll();
+
 
     }
 
